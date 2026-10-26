@@ -2,7 +2,8 @@ import { readDepth } from "./depth";
 import { showHelp } from "./help";
 import { inspectDirectory } from "./inspect";
 import { readSourceFile } from "./read";
-import { searchDirectory } from "./search";
+import { collectSearchHits, searchDirectory } from "./search";
+import { reportSearchHits } from "./report";
 
 export type ForgeCommand = {
   name: string;
@@ -35,6 +36,12 @@ export const commands: ForgeCommand[] = [
     usage: "search <directory> <text> [depth]",
     description: "Find text up to a depth of 5",
     run: runSearch,
+  },
+  {
+    name: "ask",
+    usage: "ask <directory> <text> [depth]",
+    description: "Report evidence for a text search",
+    run: runAsk,
   },
 ];
 
@@ -103,4 +110,32 @@ function runSearch(args: string[]): void {
   }
 
   searchDirectory(directoryPath, query, maxDepth);
+}
+
+function runAsk(args: string[]): void {
+  const directoryPath: string | undefined = args[0];
+  const query: string | undefined = args[1];
+  const rawDepth: string | undefined = args[2];
+
+  if (directoryPath === undefined || query === undefined) {
+    console.error("Usage: forge ask <directory> <text> [depth]");
+    process.exitCode = 1;
+    return;
+  }
+
+  const maxDepth: number | undefined = readDepth(rawDepth, 5);
+  if (maxDepth === undefined) {
+    console.error("Depth must be a whole number from 1 to 5.");
+    process.exitCode = 1;
+    return;
+  }
+
+  try {
+    const hits = collectSearchHits(directoryPath, query, maxDepth);
+    console.log(reportSearchHits(query, hits));
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Cannot search directory: " + message);
+    process.exitCode = 1;
+  }
 }

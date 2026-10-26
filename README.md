@@ -31,6 +31,7 @@ Without that link, run the compiled program directly:
     forge inspect K:\forge 2
     forge read K:\forge\package.json
     forge search K:\forge readSourceFile
+    forge ask K:\forge readSourceFile
 
 Replace `K:\forge` with the directory you want to inspect.
 
@@ -46,4 +47,4 @@ Replace `K:\forge` with the directory you want to inspect.
 
 ## Status
 
-Version 0.1.0 is an early slice of the tool. A later goal is to answer questions about a repository from the evidence these commands collect. That behavior is not implemented.
+Version 0.1.0 is an early slice of the tool. `ask` only reports lines that contain the given text. It does not answer open questions, and it does not use an AI model.
