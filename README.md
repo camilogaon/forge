@@ -37,6 +37,14 @@ Replace `K:\forge` with the directory you want to inspect.
 
 `inspect` lists entries up to the given depth. The default depth is 1. `search` looks for text and its default depth is 5. Both accept a depth from 1 to 5.
 
+## How ask works
+
+1. Forge collects matching lines, skipping `node_modules`, `.git`, and `dist`.
+2. `ask` keeps source files and drops `.md` and `.test.ts` files.
+3. The report shows at most 5 of those lines.
+4. The model receives only that evidence and returns one sentence.
+5. The current model is local. It quotes the file paths and does not call an external service.
+
 ## Limits
 
 - `inspect` hides `node_modules` and `.git`.
