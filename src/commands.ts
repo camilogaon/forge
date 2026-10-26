@@ -4,6 +4,7 @@ import { inspectDirectory } from "./inspect";
 import { readSourceFile } from "./read";
 import { collectSearchHits, searchDirectory } from "./search";
 import { reportSearchHits } from "./report";
+import { answerFromEvidence } from "./answer";
 
 export type ForgeCommand = {
   name: string;
@@ -133,6 +134,11 @@ function runAsk(args: string[]): void {
   try {
     const hits = collectSearchHits(directoryPath, query, maxDepth);
     console.log(reportSearchHits(query, hits));
+  
+    if (hits.length > 0) {
+      console.log("");
+      console.log(answerFromEvidence(query, hits));
+    }
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Cannot search directory: " + message);

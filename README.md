@@ -48,4 +48,4 @@ Replace `K:\forge` with the directory you want to inspect.
 
 ## Status
 
-Version 0.1.0 is an early slice of the tool. `ask` only reports lines that contain the given text. It does not answer open questions, and it does not use an AI model.
+Version 0.1.0 is an early slice of the tool. `ask` reports at most 5 matching lines and adds a sentence naming only those files. It does not answer open questions, and it does not call an AI model.
