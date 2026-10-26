@@ -49,4 +49,4 @@ Replace `K:\forge` with the directory you want to inspect.
 
 ## Status
 
-Version 0.1.0 is an early slice of the tool. `ask` reports at most 5 matching lines and adds a sentence naming only those files. It does not answer open questions, and it does not call an AI model.
+Version 0.1.0 is an early slice of the tool. `ask` reports at most 5 source matches and adds a sentence from a local evidence model. That model only receives those matches. Forge does not call an external AI service.

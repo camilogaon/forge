@@ -4,7 +4,7 @@ import { inspectDirectory } from "./inspect";
 import { readSourceFile } from "./read";
 import { collectSearchHits, searchDirectory } from "./search";
 import { reportSearchHits, selectEvidenceHits } from "./report";
-import { answerFromEvidence } from "./answer";
+import { quotedEvidenceModel } from "./model";
 
 export type ForgeCommand = {
   name: string;
@@ -141,5 +141,5 @@ function runAsk(args: string[]): void {
 
   console.log(reportSearchHits(query, evidence));
   console.log("");
-  console.log(answerFromEvidence(query, evidence));
+  console.log(quotedEvidenceModel.answer(query, evidence));
 }
