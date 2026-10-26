@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, statSync, type Dirent, type Stats } from "node:fs";
 import { join } from "node:path";
 import { maxFileBytes } from "./limits";
+import { findMatchingLines, type LineMatch } from "./matches";
 
 const ignoredDirectoryNames: string[] = ["node_modules", ".git", "dist"];
 
@@ -66,17 +67,11 @@ function printMatches(filePath: string, query: string): number {
   }
 
   const content: string = readFileSync(filePath, "utf8");
-  const lines: string[] = content.split("\n");
-  let count: number = 0;
+  const matches: LineMatch[] = findMatchingLines(content, query);
 
-  for (let index: number = 0; index < lines.length; index += 1) {
-    const line: string = lines[index].replace("\r", "");
-
-    if (line.includes(query)) {
-      console.log(filePath + ":" + (index + 1) + ": " + line);
-      count += 1;
-    }
+  for (const match of matches) {
+    console.log(filePath + ":" + match.lineNumber + ": " + match.text);
   }
 
-  return count;
+  return matches.length;
 }
