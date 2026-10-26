@@ -2,6 +2,7 @@ import { showHelp } from "./help";
 import { inspectDirectory } from "./inspect";
 import { readSourceFile } from "./read";
 import { searchDirectory } from "./search";
+import { readDepth } from "./depth";
 
 const command: string | undefined = process.argv[2];
 const firstArgument: string | undefined = process.argv[3];
@@ -70,21 +71,4 @@ function searchCommand(
   }
 
   searchDirectory(directoryPath, query, maxDepth);
-}
-
-function readDepth(
-  rawDepth: string | undefined,
-  defaultDepth: number,
-): number | undefined {
-  if (rawDepth === undefined) {
-    return defaultDepth;
-  }
-
-  const depth: number = Number(rawDepth);
-
-  if (!Number.isInteger(depth) || depth < 1 || depth > 5) {
-    return undefined;
-  }
-
-  return depth;
 }
