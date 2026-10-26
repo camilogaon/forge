@@ -1,22 +1,39 @@
-import { readdirSync } from "node:fs";
+import { readdirSync, type Dirent } from "node:fs";
 
 export function inspectDirectory(directoryPath: string): void {
   try {
-    const entries: string[] = readdirSync(directoryPath);
-    const visibleEntries: string[] = entries.filter((entry: string) => {
-      return entry !== "node_modules" && entry !== ".git";
+    const entries: Dirent[] = readdirSync(directoryPath, {
+      withFileTypes: true,
+    });
+    const visibleEntries: Dirent[] = entries.filter((entry: Dirent) => {
+      return entry.name !== "node_modules" && entry.name !== ".git";
     });
 
-    visibleEntries.sort();
+    visibleEntries.sort((first: Dirent, second: Dirent) => {
+      return first.name.localeCompare(second.name);
+    });
 
     console.log("Directory: " + directoryPath);
 
     for (const entry of visibleEntries) {
-      console.log(entry);
+      const label: string = getEntryLabel(entry);
+      console.log(label + "  " + entry.name);
     }
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Cannot read directory: " + message);
     process.exitCode = 1;
   }
+}
+
+function getEntryLabel(entry: Dirent): string {
+  if (entry.isDirectory()) {
+    return "dir";
+  }
+
+  if (entry.isFile()) {
+    return "file";
+  }
+
+  return "other";
 }
