@@ -29,3 +29,21 @@ test("groups matches under their file", () => {
 test("reports that there is no evidence", () => {
   equal(reportSearchHits("missing", []), "No evidence for: missing");
 });
+
+test("shows at most five lines and counts the rest", () => {
+  const hits: SearchHit[] = [
+    { path: "src/app.ts", lineNumber: 1, text: "one" },
+    { path: "src/app.ts", lineNumber: 2, text: "two" },
+    { path: "src/app.ts", lineNumber: 3, text: "three" },
+    { path: "src/app.ts", lineNumber: 4, text: "four" },
+    { path: "src/app.ts", lineNumber: 5, text: "five" },
+    { path: "src/app.ts", lineNumber: 6, text: "six" },
+  ];
+
+  const report: string = reportSearchHits("count", hits);
+
+  equal(report.includes("  5: five"), true);
+  equal(report.includes("  6: six"), false);
+  equal(report.includes("Matching lines: 6"), true);
+  equal(report.includes("Omitted lines: 1"), true);
+});

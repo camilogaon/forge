@@ -44,6 +44,7 @@ Replace `K:\forge` with the directory you want to inspect.
 - `read` and `search` refuse files larger than 100000 bytes.
 - Search is case-sensitive.
 - A binary file can still be printed as broken text. Forge does not detect file types yet.
+- `ask` shows at most 5 matching lines and reports how many were omitted.
 
 ## Status
 

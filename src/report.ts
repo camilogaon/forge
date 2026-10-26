@@ -1,3 +1,4 @@
+import { maxReportedHits } from "./limits";
 import { type SearchHit } from "./search";
 
 export function reportSearchHits(query: string, hits: SearchHit[]): string {
@@ -5,13 +6,15 @@ export function reportSearchHits(query: string, hits: SearchHit[]): string {
     return "No evidence for: " + query;
   }
 
+  const visibleHits: SearchHit[] = hits.slice(0, maxReportedHits);
+  const omitted: number = hits.length - visibleHits.length;
   const lines: string[] = [];
+  let currentPath: string | undefined = undefined;
+
   lines.push("Evidence for: " + query);
   lines.push("");
 
-  let currentPath: string | undefined = undefined;
-
-  for (const hit of hits) {
+  for (const hit of visibleHits) {
     if (hit.path !== currentPath) {
       currentPath = hit.path;
       lines.push(hit.path);
@@ -22,6 +25,10 @@ export function reportSearchHits(query: string, hits: SearchHit[]): string {
 
   lines.push("");
   lines.push("Matching lines: " + String(hits.length));
+
+  if (omitted > 0) {
+    lines.push("Omitted lines: " + String(omitted));
+  }
 
   return lines.join("\n");
 }
