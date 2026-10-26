@@ -1,6 +1,6 @@
 import { equal } from "node:assert/strict";
 import { test } from "node:test";
-import { reportSearchHits } from "./report";
+import { reportSearchHits, selectEvidenceHits } from "./report";
 import { type SearchHit } from "./search";
 
 test("groups matches under their file", () => {
@@ -46,4 +46,17 @@ test("shows at most five lines and counts the rest", () => {
   equal(report.includes("  6: six"), false);
   equal(report.includes("Matching lines: 6"), true);
   equal(report.includes("Omitted lines: 1"), true);
+});
+
+test("keeps source files and drops docs and tests", () => {
+  const hits: SearchHit[] = [
+    { path: "README.md", lineNumber: 1, text: "docs" },
+    { path: "src/read.ts", lineNumber: 4, text: "code" },
+    { path: "src/read.test.ts", lineNumber: 2, text: "test" },
+  ];
+
+  const selected: SearchHit[] = selectEvidenceHits(hits);
+
+  equal(selected.length, 1);
+  equal(selected[0].path, "src/read.ts");
 });

@@ -3,7 +3,7 @@ import { showHelp } from "./help";
 import { inspectDirectory } from "./inspect";
 import { readSourceFile } from "./read";
 import { collectSearchHits, searchDirectory } from "./search";
-import { reportSearchHits } from "./report";
+import { reportSearchHits, selectEvidenceHits } from "./report";
 import { answerFromEvidence } from "./answer";
 
 export type ForgeCommand = {
@@ -131,17 +131,15 @@ function runAsk(args: string[]): void {
     return;
   }
 
-  try {
-    const hits = collectSearchHits(directoryPath, query, maxDepth);
-    console.log(reportSearchHits(query, hits));
-  
-    if (hits.length > 0) {
-      console.log("");
-      console.log(answerFromEvidence(query, hits));
-    }
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("Cannot search directory: " + message);
-    process.exitCode = 1;
+  const hits = collectSearchHits(directoryPath, query, maxDepth);
+  const evidence = selectEvidenceHits(hits);
+
+  if (evidence.length === 0) {
+    console.log("No evidence in source files for: " + query);
+    return;
   }
+
+  console.log(reportSearchHits(query, evidence));
+  console.log("");
+  console.log(answerFromEvidence(query, evidence));
 }

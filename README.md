@@ -45,6 +45,7 @@ Replace `K:\forge` with the directory you want to inspect.
 - Search is case-sensitive.
 - A binary file can still be printed as broken text. Forge does not detect file types yet.
 - `ask` shows at most 5 matching lines and reports how many were omitted.
+- `ask` ignores `.md` and `.test.ts` files. `search` still reports every match.
 
 ## Status
 

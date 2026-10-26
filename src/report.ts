@@ -32,3 +32,27 @@ export function reportSearchHits(query: string, hits: SearchHit[]): string {
 
   return lines.join("\n");
 }
+
+const ignoredEvidenceSuffixes: string[] = [".md", ".test.ts"];
+
+export function selectEvidenceHits(hits: SearchHit[]): SearchHit[] {
+  const selected: SearchHit[] = [];
+
+  for (const hit of hits) {
+    if (!hasIgnoredSuffix(hit.path)) {
+      selected.push(hit);
+    }
+  }
+
+  return selected;
+}
+
+function hasIgnoredSuffix(filePath: string): boolean {
+  for (const suffix of ignoredEvidenceSuffixes) {
+    if (filePath.endsWith(suffix)) {
+      return true;
+    }
+  }
+
+  return false;
+}
