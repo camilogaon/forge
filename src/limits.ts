@@ -1,0 +1,1 @@
+export const maxFileBytes: number = 100_000;

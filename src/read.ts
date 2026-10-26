@@ -1,6 +1,5 @@
 import { readFileSync, statSync, type Stats } from "node:fs";
-
-const maxBytes: number = 100_000;
+import { maxFileBytes } from "./limits";
 
 export function readSourceFile(filePath: string): void {
   try {
@@ -12,8 +11,8 @@ export function readSourceFile(filePath: string): void {
       return;
     }
 
-    if (fileInfo.size > maxBytes) {
-      console.error("File is larger than " + maxBytes + " bytes: " + filePath);
+    if (fileInfo.size > maxFileBytes) {
+      console.error("File is larger than " + maxFileBytes + " bytes: " + filePath);
       process.exitCode = 1;
       return;
     }
