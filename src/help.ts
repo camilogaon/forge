@@ -9,4 +9,5 @@ export function showHelp(): void {
   console.log("  help                 Show how to use Forge");
   console.log("  inspect <directory> [depth]  List entries up to a depth from 1 to 5");
   console.log("  read <file>                  Show the text inside a file");
+  console.log("  search <directory> <text> [depth]  Find text up to a depth of 5");
 }
