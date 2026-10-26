@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { showHelp } from "./help";
 import { inspectDirectory } from "./inspect";
 import { readSourceFile } from "./read";
