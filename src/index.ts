@@ -1,5 +1,6 @@
 import { showHelp } from "./help";
 import { inspectDirectory } from "./inspect";
+import { readSourceFile } from "./read";
 
 const command: string | undefined = process.argv[2];
 const targetPath: string | undefined = process.argv[3];
@@ -9,6 +10,8 @@ if (command === undefined || command === "help") {
   showHelp();
 } else if (command === "inspect") {
   inspectCommand(targetPath, rawDepth);
+} else if (command === "read") {
+  readCommand(targetPath);
 } else {
   console.error("Unknown command: " + command);
   process.exitCode = 1;
@@ -32,6 +35,16 @@ function inspectCommand(
   }
 
   inspectDirectory(directoryPath, maxDepth);
+}
+
+function readCommand(filePath: string | undefined): void {
+  if (filePath === undefined) {
+    console.error("Usage: forge read <file>");
+    process.exitCode = 1;
+    return;
+  }
+
+  readSourceFile(filePath);
 }
 
 function readDepth(rawDepth: string | undefined): number | undefined {
