@@ -18,3 +18,10 @@ test("finds a command by its name", () => {
 test("returns undefined for an unknown command", () => {
   equal(findCommand("build"), undefined);
 });
+
+test("stores a function for each command", () => {
+  equal(typeof commands[0].run, "function");
+  equal(typeof commands[1].run, "function");
+  equal(typeof commands[2].run, "function");
+  equal(typeof commands[3].run, "function");
+});
