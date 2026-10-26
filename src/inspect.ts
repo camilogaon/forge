@@ -1,28 +1,45 @@
 import { readdirSync, type Dirent } from "node:fs";
+import { join } from "node:path";
 
-export function inspectDirectory(directoryPath: string): void {
+export function inspectDirectory(
+  directoryPath: string,
+  maxDepth: number,
+): void {
   try {
-    const entries: Dirent[] = readdirSync(directoryPath, {
-      withFileTypes: true,
-    });
-    const visibleEntries: Dirent[] = entries.filter((entry: Dirent) => {
-      return entry.name !== "node_modules" && entry.name !== ".git";
-    });
-
-    visibleEntries.sort((first: Dirent, second: Dirent) => {
-      return first.name.localeCompare(second.name);
-    });
-
     console.log("Directory: " + directoryPath);
-
-    for (const entry of visibleEntries) {
-      const label: string = getEntryLabel(entry);
-      console.log(label + "  " + entry.name);
-    }
+    printEntries(directoryPath, 1, maxDepth);
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Cannot read directory: " + message);
     process.exitCode = 1;
+  }
+}
+
+function printEntries(
+  directoryPath: string,
+  depth: number,
+  maxDepth: number,
+): void {
+  const entries: Dirent[] = readdirSync(directoryPath, {
+    withFileTypes: true,
+  });
+  const visibleEntries: Dirent[] = entries.filter((entry: Dirent) => {
+    return entry.name !== "node_modules" && entry.name !== ".git";
+  });
+
+  visibleEntries.sort((first: Dirent, second: Dirent) => {
+    return first.name.localeCompare(second.name);
+  });
+
+  for (const entry of visibleEntries) {
+    const label: string = getEntryLabel(entry);
+    const indent: string = "  ".repeat(depth - 1);
+    console.log(indent + label + "  " + entry.name);
+
+    if (entry.isDirectory() && depth < maxDepth) {
+      const childPath: string = join(directoryPath, entry.name);
+      printEntries(childPath, depth + 1, maxDepth);
+    }
   }
 }
 
