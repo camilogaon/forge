@@ -3,8 +3,8 @@ import { showHelp } from "./help";
 import { inspectDirectory } from "./inspect";
 import { readSourceFile } from "./read";
 import { collectSearchHits, searchDirectory } from "./search";
-import { reportSearchHits, selectEvidenceHits } from "./report";
 import { quotedEvidenceModel } from "./model";
+import { buildAskReport } from "./ask";
 
 export type ForgeCommand = {
   name: string;
@@ -131,15 +131,12 @@ function runAsk(args: string[]): void {
     return;
   }
 
-  const hits = collectSearchHits(directoryPath, query, maxDepth);
-  const evidence = selectEvidenceHits(hits);
-
-  if (evidence.length === 0) {
-    console.log("No evidence in source files for: " + query);
-    return;
+  try {
+    const hits = collectSearchHits(directoryPath, query, maxDepth);
+    console.log(buildAskReport(query, hits, quotedEvidenceModel));
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Cannot search directory: " + message);
+    process.exitCode = 1;
   }
-
-  console.log(reportSearchHits(query, evidence));
-  console.log("");
-  console.log(quotedEvidenceModel.answer(query, evidence));
 }
