@@ -1,7 +1,7 @@
-import { readdirSync, readFileSync, statSync, type Dirent, type Stats } from "node:fs";
-import { join } from "node:path";
+import { readFileSync, statSync, type Stats } from "node:fs";
 import { maxFileBytes } from "./limits";
 import { findMatchingLines, type LineMatch } from "./matches";
+import { walkDirectory, type WalkEntry } from "./walk";
 
 const ignoredDirectoryNames: string[] = ["node_modules", ".git", "dist"];
 
@@ -11,13 +11,19 @@ export function searchDirectory(
   maxDepth: number,
 ): void {
   try {
-    const files: string[] = [];
-    collectFiles(directoryPath, 1, maxDepth, files);
+    const entries: WalkEntry[] = walkDirectory(
+      directoryPath,
+      maxDepth,
+      ignoredDirectoryNames,
+    );
+    const files: WalkEntry[] = entries.filter((entry: WalkEntry) => {
+      return entry.kind === "file";
+    });
 
     let matchCount: number = 0;
 
-    for (const filePath of files) {
-      matchCount += printMatches(filePath, query);
+    for (const file of files) {
+      matchCount += printMatches(file.path, query);
     }
 
     if (matchCount === 0) {
@@ -30,39 +36,13 @@ export function searchDirectory(
   }
 }
 
-function collectFiles(
-  directoryPath: string,
-  depth: number,
-  maxDepth: number,
-  files: string[],
-): void {
-  const entries: Dirent[] = readdirSync(directoryPath, {
-    withFileTypes: true,
-  });
-  const visibleEntries: Dirent[] = entries.filter((entry: Dirent) => {
-    return !ignoredDirectoryNames.includes(entry.name);
-  });
-
-  visibleEntries.sort((first: Dirent, second: Dirent) => {
-    return first.name.localeCompare(second.name);
-  });
-
-  for (const entry of visibleEntries) {
-    const childPath: string = join(directoryPath, entry.name);
-
-    if (entry.isDirectory() && depth < maxDepth) {
-      collectFiles(childPath, depth + 1, maxDepth, files);
-    } else if (entry.isFile()) {
-      files.push(childPath);
-    }
-  }
-}
-
 function printMatches(filePath: string, query: string): number {
   const fileInfo: Stats = statSync(filePath);
 
   if (fileInfo.size > maxFileBytes) {
-    console.error("Skipped a file larger than " + maxFileBytes + " bytes: " + filePath);
+    console.error(
+      "Skipped a file larger than " + maxFileBytes + " bytes: " + filePath,
+    );
     return 0;
   }
 
