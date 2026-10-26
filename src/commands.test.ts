@@ -1,6 +1,7 @@
 import { equal } from "node:assert/strict";
 import { test } from "node:test";
-import { commands } from "./commands";
+import { commands, findCommand } from "./commands";
+
 
 test("describes the four Forge commands", () => {
   equal(commands.length, 4);
@@ -8,4 +9,12 @@ test("describes the four Forge commands", () => {
   equal(commands[1].name, "inspect");
   equal(commands[2].name, "read");
   equal(commands[3].name, "search");
+});
+
+test("finds a command by its name", () => {
+  equal(findCommand("inspect")?.name, "inspect");
+});
+
+test("returns undefined for an unknown command", () => {
+  equal(findCommand("build"), undefined);
 });

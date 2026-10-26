@@ -26,3 +26,13 @@ export const commands: ForgeCommand[] = [
     description: "Find text up to a depth of 5",
   },
 ];
+
+export function findCommand(name: string): ForgeCommand | undefined {
+  for (const command of commands) {
+    if (command.name === name) {
+      return command;
+    }
+  }
+
+  return undefined;
+}

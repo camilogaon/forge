@@ -1,25 +1,53 @@
 #!/usr/bin/env node
+
+import { findCommand, type ForgeCommand } from "./commands";
+import { readDepth } from "./depth";
 import { showHelp } from "./help";
 import { inspectDirectory } from "./inspect";
 import { readSourceFile } from "./read";
 import { searchDirectory } from "./search";
-import { readDepth } from "./depth";
 
-const command: string | undefined = process.argv[2];
+const commandName: string | undefined = process.argv[2];
 const firstArgument: string | undefined = process.argv[3];
 const secondArgument: string | undefined = process.argv[4];
 const thirdArgument: string | undefined = process.argv[5];
 
-if (command === undefined || command === "help") {
+if (commandName === undefined || commandName === "help") {
   showHelp();
-} else if (command === "inspect") {
-  inspectCommand(firstArgument, secondArgument);
-} else if (command === "read") {
-  readCommand(firstArgument);
-} else if (command === "search") {
-  searchCommand(firstArgument, secondArgument, thirdArgument);
 } else {
-  console.error("Unknown command: " + command);
+  runCommand(commandName, firstArgument, secondArgument, thirdArgument);
+}
+
+function runCommand(
+  commandName: string,
+  firstArgument: string | undefined,
+  secondArgument: string | undefined,
+  thirdArgument: string | undefined,
+): void {
+  const command: ForgeCommand | undefined = findCommand(commandName);
+
+  if (command === undefined) {
+    console.error("Unknown command: " + commandName);
+    process.exitCode = 1;
+    return;
+  }
+
+  if (command.name === "inspect") {
+    inspectCommand(firstArgument, secondArgument);
+    return;
+  }
+
+  if (command.name === "read") {
+    readCommand(firstArgument);
+    return;
+  }
+
+  if (command.name === "search") {
+    searchCommand(firstArgument, secondArgument, thirdArgument);
+    return;
+  }
+
+  console.error("Command is not implemented: " + command.name);
   process.exitCode = 1;
 }
 
